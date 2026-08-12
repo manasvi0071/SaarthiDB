@@ -1,6 +1,7 @@
 import _react2 from "react";
 import * as _react from "react";
 import * as _lucideReact from "lucide-react";
+import { getUsers } from "../../lib/saarthiApi";
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 var _slicedToArray = function () {
   function sliceIterator(arr, i) {
@@ -40,53 +41,36 @@ function _interopRequireDefault(obj) {
     "default": obj
   };
 }
-var usersData = [{
-  id: 1,
-  name: "John Doe",
-  email: "john.doe@corp.com",
-  role: "Admin",
-  status: "Active",
-  lastActive: "2 hours ago",
-  companies: 234,
-  avatar: "JD"
-}, {
-  id: 2,
-  name: "Jane Smith",
-  email: "jane.smith@corp.com",
-  role: "Manager",
-  status: "Active",
-  lastActive: "5 hours ago",
-  companies: 189,
-  avatar: "JS"
-}, {
-  id: 3,
-  name: "Mike Johnson",
-  email: "mike.johnson@corp.com",
-  role: "Sales Rep",
-  status: "Active",
-  lastActive: "1 day ago",
-  companies: 145,
-  avatar: "MJ"
-}, {
-  id: 4,
-  name: "Sarah Williams",
-  email: "sarah.williams@corp.com",
-  role: "Sales Rep",
-  status: "Active",
-  lastActive: "3 hours ago",
-  companies: 167,
-  avatar: "SW"
-}, {
-  id: 5,
-  name: "David Brown",
-  email: "david.brown@corp.com",
-  role: "Analyst",
-  status: "Inactive",
-  lastActive: "2 weeks ago",
-  companies: 78,
-  avatar: "DB"
-}];
+
 export function Users() {
+  var _useStateUsers = _react.useState([]);
+  var _useStateUsers2 = _slicedToArray(_useStateUsers, 2);
+  var usersData = _useStateUsers2[0];
+  var setUsersData = _useStateUsers2[1];
+
+  var _useStateLoading = _react.useState(true);
+  var _useStateLoading2 = _slicedToArray(_useStateLoading, 2);
+  var loading = _useStateLoading2[0];
+  var setLoading = _useStateLoading2[1];
+
+  var _useStateError = _react.useState(null);
+  var _useStateError2 = _slicedToArray(_useStateError, 2);
+  var error = _useStateError2[0];
+  var setError = _useStateError2[1];
+
+  _react.useEffect(function () {
+    getUsers()
+      .then(function (res) {
+        setUsersData(res.data || []);
+      })
+      .catch(function (err) {
+        setError(err.message);
+      })
+      .finally(function () {
+        setLoading(false);
+      });
+  }, []);
+
   var _useState = _react.useState("");
   var _useState2 = _slicedToArray(_useState, 2);
   var searchTerm = _useState2[0];
@@ -96,7 +80,9 @@ export function Users() {
   var selectedRole = _useState32[0];
   var setSelectedRole = _useState32[1];
   var filteredUsers = usersData.filter(function (user) {
-    var matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) || user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    var name = user.name || user.username || "";
+    var email = user.email || "";
+    var matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase()) || email.toLowerCase().includes(searchTerm.toLowerCase());
     var matchesRole = selectedRole === "all" || user.role === selectedRole;
     return matchesSearch && matchesRole;
   });
@@ -174,7 +160,7 @@ export function Users() {
               }, void 0, false), /*#__PURE__*/_jsx("div", {
                 children: [/*#__PURE__*/_jsx("h3", {
                   className: "mb-1",
-                  children: user.name
+                  children: user.username
                 }, void 0, false), /*#__PURE__*/_jsx("div", {
                   className: "flex items-center gap-2 text-sm text-muted-foreground mb-2",
                   children: [/*#__PURE__*/_jsx(_lucideReact.Mail, {
